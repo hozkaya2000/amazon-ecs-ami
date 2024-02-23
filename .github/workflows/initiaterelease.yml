@@ -9,7 +9,7 @@ jobs:
   GenerateConfig:
     runs-on: ubuntu-latest
     outputs:
-      commit_exit_code: ${{ steps.final.outputs.commit_exit_code }}
+      push_exit_code: ${{ steps.push.outputs.push_exit_code }}
     permissions:
       id-token: write
       contents: write
@@ -40,22 +40,28 @@ jobs:
       run: ./scripts/check-update.sh al2
     - name: Check AL2023 Update
       run: ./scripts/check-update.sh al2023
+    - name: Check for changes
+      id: staging
+      run: |
+        git diff --cached --quiet 
+        echo "staged_exit_code=$?" >> "$GITHUB_OUTPUT"
     - name: Commit and Push Changes
-      id: final
+      id: push
+      if: ${{ steps.staging.outputs.staged_exit_code == 1 }}
       run: |
         date=$(date '+%Y%m%d')
         git commit -m "Release ${date}"
-        echo "commit_exit_code=$?" >> "$GITHUB_OUTPUT"
         git status
         git push --set-upstream origin release-${date}
+        echo "push_exit_code=$?" >> "$GITHUB_OUTPUT"
     - name: Open PR for Branch 
-      if: ${{ steps.final.outputs.commit_exit_code == 0 }}
+      if: ${{ steps.push.outputs.push_exit_code == 0 }}
       run: |
         date=$(date '+%Y%m%d')
         gh pr create --base main --head release-${date} --title "Release ${date}" --body "Enhanced ECS Optimized AMI Release changes"
   PushToCodeCommit:
     needs: GenerateConfig
-    if: ${{ needs.GenerateConfig.outputs.commit_exit_code == 0 }}
+    if: ${{ needs.GenerateConfig.outputs.push_exit_code == 0 }}
     runs-on: ubuntu-latest
     permissions:
       id-token: write
