@@ -23,6 +23,7 @@ jobs:
     - name: Do something
       run: |
         touch testFile.txt
+        git add .
     - name: Commit and Push Changes
       id: final
       run: |
