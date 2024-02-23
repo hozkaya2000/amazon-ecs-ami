@@ -55,7 +55,7 @@ jobs:
         git push --set-upstream origin release-${date}
         echo "push_exit_code=$?" >> "$GITHUB_OUTPUT"
     - name: Open PR for Branch 
-      if: ${{ steps.push.outputs.push_exit_code == 0 }}
+      if: ${{ steps.staging.outputs.staged_exit_code == 1 && steps.push.outputs.push_exit_code == 0 }}
       run: |
         date=$(date '+%Y%m%d')
         gh pr create --base main --head release-${date} --title "Release ${date}" --body "Enhanced ECS Optimized AMI Release changes"
