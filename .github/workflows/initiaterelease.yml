@@ -47,6 +47,7 @@ jobs:
         set +e
         git diff --cached --quiet 
         echo "staged_exit_code=$?" >> "$GITHUB_OUTPUT"
+        echo "push_exit_code=1" >> "$GITHUB_OUTPUT"
         set -e
     - name: Commit and Push Changes
       id: push
