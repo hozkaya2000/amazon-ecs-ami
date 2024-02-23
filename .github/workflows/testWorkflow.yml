@@ -21,7 +21,9 @@ jobs:
         git config --global user.name "GenerateConfig Action"
         git config --global user.email "gcaction@github.com"
     - name: Do something
-      run: touch testFile.txt
+      run: |
+        touch testFile.txt
+        git add .
     - name: Commit and Push Changes
       id: final
       run: |
