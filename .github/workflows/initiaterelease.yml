@@ -43,8 +43,10 @@ jobs:
     - name: Check for changes
       id: staging
       run: |
+        set +e
         git diff --cached --quiet 
         echo "staged_exit_code=$?" >> "$GITHUB_OUTPUT"
+        set -e
     - name: Commit and Push Changes
       id: push
       if: ${{ steps.staging.outputs.staged_exit_code == 1 }}
