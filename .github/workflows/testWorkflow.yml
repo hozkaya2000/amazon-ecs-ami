@@ -27,15 +27,13 @@ jobs:
     - name: Commit and Push Changes
       id: final
       run: |
-        set +e
         git commit -m "Release Kickoff"
         echo "commit_exit_code=$?" >> "$GITHUB_OUTPUT"
         git status
         date=$(date '+%Y%m%d')
         git push --set-upstream origin release-${date}
-        set -e
     - name: Open PR for Branch 
-      if: ${{ steps.final.outputs.commit_exit_code == 0 }}
+      if: ${{ steps.final.result == 'failure' }}
       run: |
         date=$(date '+%Y%m%d')
         gh pr create --base main --head release-${date} --title "Release ${date}" --body "test blahblah"
