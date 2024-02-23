@@ -33,7 +33,7 @@ jobs:
         set -e
     - name: Open PR for Branch 
       run: |
-        gh pr create --base main --head release-${date} --title "Release ${date}"
+        gh pr create --base main --head release-${date} --title "Release ${date}" --body "test blahblah"
   PushToCodeCommit:
     needs: GenerateConfig
     if: ${{ needs.GenerateConfig.outputs.commit_exit_code == 0 }}
