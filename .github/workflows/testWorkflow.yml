@@ -47,7 +47,7 @@ jobs:
       GH_TOKEN: ${{ secrets.TEST_PAT }}
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
     - name: Configure prereqs
       run: |
