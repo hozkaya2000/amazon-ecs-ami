@@ -33,7 +33,7 @@ jobs:
         date=$(date '+%Y%m%d')
         git push --set-upstream origin release-${date}
     - name: Open PR for Branch 
-      if: ${{ steps.final.result == 'failure' }}
+      if: ${{ steps.final.outputs.commit_exit_code == 0 }}
       run: |
         date=$(date '+%Y%m%d')
         gh pr create --base main --head release-${date} --title "Release ${date}" --body "test blahblah"
