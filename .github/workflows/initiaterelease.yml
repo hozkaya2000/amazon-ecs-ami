@@ -27,7 +27,9 @@ jobs:
         date=$(date '+%Y%m%d')
         git checkout -b release-${date}
     - name: Install xmllint
-      run: sudo apt-get update && sudo apt-get install libxml2-utils
+      run: |
+        # generate-release-vars.sh depends on these packages 
+        sudo apt-get update && sudo apt-get install libxml2-utils
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
@@ -46,6 +48,8 @@ jobs:
     - name: Check for changes
       id: stage
       run: |
+        # Git diff returns exit code of 1 when there is a change staged
+        # We need the set statements to prevent erroring out
         set +e
         git diff --cached --quiet 
         echo "stage_exit_code=$?" >> "$GITHUB_OUTPUT"
