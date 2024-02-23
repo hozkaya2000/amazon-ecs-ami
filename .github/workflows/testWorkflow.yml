@@ -31,7 +31,7 @@ jobs:
         git commit -m "Release Kickoff"
         echo "commit_exit_code=$?" >> "$GITHUB_OUTPUT"
         git status
-        git push
+        git push --set-upstream origin release-${date}
         set -e
     - name: Open PR for Branch 
       if: ${{ steps.final.outputs.commit_exit_code == 0 }}
