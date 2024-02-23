@@ -43,8 +43,8 @@ jobs:
     needs: GenerateConfig
     if: ${{ needs.GenerateConfig.outputs.commit_exit_code == 0 }}
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ github.token }}
+    env: 
+      GH_TOKEN: ${{ secrets.TEST_PAT }}
     permissions:
       id-token: write
       contents: read
