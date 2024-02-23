@@ -60,7 +60,7 @@ jobs:
     - name: Mirror to shinkansen branch on codecommit repository
       run: | 
         date=$(date '+%Y%m%d')
-        git clone https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
+        git clone git@github.com:hozkaya2000/amazon-ecs-ami.git ecsAmiGithub
         cd ecsAmiGithub
         git checkout release-${date}
         git push origin release-${date}:fakeShinkansen
