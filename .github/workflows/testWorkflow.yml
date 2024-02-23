@@ -58,5 +58,6 @@ jobs:
         date=$(date '+%Y%m%d')
         git clone https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
         cd ecsAmiGithub
+        git remote add fakeCodeCommit git@github.com:hozkaya2000/amazon-ecs-aim.git
         git checkout release-${date}
-        git push origin release-${date}:refs/heads/fakeShinkansen
+        git push fakeCodeCommit release-${date}:fakeShinkansen
