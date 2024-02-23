@@ -70,7 +70,7 @@ jobs:
         aws-region: us-west-2
     - name: Delete shinkansen branch on codecommit repository
       run: |
-        aws codecommit delete-branch --repository-name amazon-ecs-ami-mirror --branch-name shinkansen
+        aws codecommit delete-branch --repository-name halitTest --branch-name shinkansen
     - name: Configure prereqs
       run: |
         git config --global user.name "Github Action"
