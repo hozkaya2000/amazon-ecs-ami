@@ -7,6 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       commit_exit_code: ${{ steps.final.outputs.commit_exit_code }}
+    env:
+      GH_TOKEN: ${{ github.token }}
     steps:
     - name: Checkout
       uses: actions/checkout@v4
