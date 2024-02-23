@@ -49,6 +49,10 @@ jobs:
       id-token: write
       contents: write
     steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.TEST_PAT }}
     - name: Configure prereqs
       run: |
         git config --global user.name "Github Action"
