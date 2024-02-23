@@ -32,6 +32,7 @@ jobs:
         git push
         set -e
     - name: Open PR for Branch 
+      if: ${{ steps.final.outputs.commit_exit_code == 0 }}
       run: |
         gh pr create --base main --head release-${date} --title "Release ${date}" --body "test blahblah"
   PushToCodeCommit:
