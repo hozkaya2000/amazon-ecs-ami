@@ -1,0 +1,73 @@
+name: TestWorkflow
+
+on: workflow_dispatch
+
+jobs:
+  GenerateConfig:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_exit_code: ${{ steps.final.outputs.commit_exit_code }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Create Release Branch
+      run: |
+        date=$(date '+%Y%m%d')
+        git checkout -b release-${date}
+    - name: Configure Bot Alias
+      run: |
+        git config --global user.name "GenerateConfig Action"
+        git config --global user.email "gcaction@github.com"
+    - name: Do something
+      run: |
+        touch testFile.txt
+        git add .
+    - name: Commit and Push Changes
+      id: final
+      run: |
+        git commit -m "Release Kickoff"
+        echo "commit_exit_code=$?" >> "$GITHUB_OUTPUT"
+        git status
+        date=$(date '+%Y%m%d')
+        git push --set-upstream origin release-${date}
+    - name: Open PR for Branch 
+      if: ${{ steps.final.outputs.commit_exit_code == 0 }}
+      run: |
+        date=$(date '+%Y%m%d')
+        gh pr create --base main --head release-${date} --title "Release ${date}" --body "test blahblah"
+  PushToCodeCommit:
+    needs: GenerateConfig
+    if: ${{ needs.GenerateConfig.outputs.commit_exit_code == 0 }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with: 
+        role-to-assume: ${{secrets.AMI_MIRROR_ROLE}}
+        aws-region: us-west-2
+    - name: Delete shinkansen branch on codecommit repository
+      run: |
+        aws codecommit delete-branch --repository-name amazon-ecs-ami-mirror --branch-name shinkansen
+    - name: Configure prereqs
+      run: |
+        git config --global user.name "Github Action"
+        git config --global user.email "action@github.com"
+        pip install git-remote-codecommit
+    - name: Mirror to shinkansen branch on codecommit repository
+      run: | 
+        date=$(date '+%Y%m%d')
+        git clone --single-branch --branch release-${date} https://github.com/aws/amazon-ecs-ami ecsAmiGithub
+        git clone codecommit::us-west-2://amazon-ecs-ami-mirror ecsAmiCodeCommit
+        cp ecsAmiCodeCommit/Config ecsAmiGithub/
+        cd ecsAmiGithub
+        git add Config
+        git commit -m "Release ${date}"
+        git remote add codecommit codecommit::us-west-2://amazon-ecs-ami-mirror
+        git push codecommit release-${date}:shinkansen
