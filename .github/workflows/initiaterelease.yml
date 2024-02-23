@@ -13,6 +13,7 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      pull-requests: write
     env: 
       IAM_INSTANCE_PROFILE_ARN: ${{ secrets.IAM_INSTANCE_PROFILE_ARN }} 
       GH_TOKEN: ${{ github.token }}
