@@ -57,7 +57,7 @@ jobs:
       run: | 
         date=$(date '+%Y%m%d')
         git clone --single-branch --branch release-${date} https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
-        git remote add fakeCodecommit https://github.com/hozkaya2000/amazon-ecs-ami
         cd ecsAmiGithub
+        git remote add fakeCodecommit https://github.com/hozkaya2000/amazon-ecs-ami
         git push fakeCodecommit release-${date}:fakeShinkansen
   
