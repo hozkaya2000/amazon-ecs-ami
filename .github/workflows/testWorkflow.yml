@@ -59,4 +59,4 @@ jobs:
         git clone https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
         cd ecsAmiGithub
         git checkout release-${date}
-        git push fakeCodecommit release-${date}:fakeShinkansen
+        git push origin release-${date}:refs/heads/fakeShinkansen
