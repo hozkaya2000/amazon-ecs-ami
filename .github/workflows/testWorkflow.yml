@@ -1,0 +1,55 @@
+name: InitiateRelease
+
+on: workflow_dispatch
+
+jobs:
+  GenerateConfig:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_exit_code: ${{ steps.final.outputs.commit_exit_code }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Create Release Branch
+      run: |
+        date=$(date '+%Y%m%d')
+        git checkout -b release-${date}
+    - name: Configure Bot Alias
+      run: |
+        git config --global user.name "GenerateConfig Action"
+        git config --global user.email "gcaction@github.com"
+    - name: Do something
+      run: touch testFile.txt
+    - name: Commit and Push Changes
+      id: final
+      run: |
+        set +e
+        git commit -m "Release Kickoff"
+        echo "commit_exit_code=$?" >> "$GITHUB_OUTPUT"
+        git status
+        git push
+        set -e
+    - name: Open PR for Branch 
+      run: |
+        gh pr create --base main --head release-${date} --title "Release ${date}"
+  PushToCodeCommit:
+    needs: GenerateConfig
+    if: ${{ needs.GenerateConfig.outputs.commit_exit_code == 0 }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Configure prereqs
+      run: |
+        git config --global user.name "Github Action"
+        git config --global user.email "action@github.com"
+    - name: Mirror to shinkansen branch on codecommit repository
+      run: | 
+        date=$(date '+%Y%m%d')
+        git clone --single-branch --branch release-${date} https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
+        git remote add fakeCodecommit https://github.com/hozkaya2000/amazon-ecs-ami
+        git push fakeCodecommit release-${date}:fakeShinkansen
+  
