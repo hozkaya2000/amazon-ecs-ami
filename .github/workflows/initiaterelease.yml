@@ -33,7 +33,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{ secrets.AMI_GENERATE_CONFIG_ROLE }}
+        role-to-assume: ${{ secrets.AMI_TESTING_ROLE }}
         aws-region: us-west-2
     - name: Configure Bot Alias
       run: |
@@ -83,11 +83,11 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{secrets.AMI_MIRROR_ROLE}}
+        role-to-assume: ${{secrets.AMI_TESTING_ROLE}}
         aws-region: us-west-2
     - name: Delete shinkansen branch on codecommit repository
       run: |
-        aws codecommit delete-branch --repository-name amazon-ecs-ami-mirror --branch-name shinkansen
+        aws codecommit delete-branch --repository-name halitTest --branch-name shinkansen
     - name: Configure prereqs
       run: |
         git config --global user.name "Github Action"
@@ -96,13 +96,13 @@ jobs:
     - name: Mirror to shinkansen branch on codecommit repository
       run: | 
         date=$(date '+%Y%m%d')
-        git clone --single-branch --branch release-${date} https://github.com/aws/amazon-ecs-ami ecsAmiGithub
-        git clone codecommit::us-west-2://amazon-ecs-ami-mirror ecsAmiCodeCommit
+        git clone --single-branch --branch release-${date} https://github.com/hozkaya2000/amazon-ecs-ami ecsAmiGithub
+        git clone codecommit::us-west-2://halitTest ecsAmiCodeCommit
         cp ecsAmiCodeCommit/Config ecsAmiGithub/
         cd ecsAmiGithub
         git add Config
         git commit -m "Release ${date}"
-        git remote add codecommit codecommit::us-west-2://amazon-ecs-ami-mirror
+        git remote add codecommit codecommit::us-west-2://halitTest
         git push codecommit release-${date}:shinkansen
   MetricPublish:
     needs: [GenerateConfig, PushToCodeCommit]
@@ -117,7 +117,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{secrets.AMI_MIRROR_ROLE}}
+        role-to-assume: ${{secrets.AMI_TESTING_ROLE}}
         aws-region: us-west-2
     - name: Failure Scenario
       if: ${{ needs.GenerateConfig.result == 'failure' || needs.PushToCodeCommit.result == 'failure' }}
