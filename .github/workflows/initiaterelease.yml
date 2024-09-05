@@ -33,7 +33,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{ secrets.AMI_GENERATE_CONFIG_ROLE }}
+        role-to-assume: ${{ secrets.AMI_TESTING_ROLE }}
         aws-region: us-west-2
     - name: Configure Bot Alias
       run: |
@@ -83,7 +83,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{secrets.AMI_MIRROR_ROLE}}
+        role-to-assume: ${{secrets.AMI_TESTING_ROLE}}
         aws-region: us-west-2
     - name: Delete shinkansen branch on codecommit repository
       run: |
@@ -120,7 +120,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with: 
-        role-to-assume: ${{secrets.AMI_MIRROR_ROLE}}
+        role-to-assume: ${{secrets.AMI_TESTING_ROLE}}
         aws-region: us-west-2
     - name: Failure Scenario
       if: ${{ needs.GenerateConfig.result == 'failure' || needs.PushToCodeCommit.result == 'failure' }}
